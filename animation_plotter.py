@@ -7,13 +7,13 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, List, Dict
 from vessel import VesselSimulator
-from wind import LoadWindData
+from wind import WindDataProcessor
 
 
 class AnimationPlotter:
     def __init__(
         self,
-        wind_data: LoadWindData,
+        wind_data: WindDataProcessor,
         stride: int = 3,
         arrow_scale: int = 200,
         vessel_states: List[Dict] = None,
@@ -21,7 +21,7 @@ class AnimationPlotter:
         """Initialize the animation plotter with wind data and parameters.
 
         Args:
-            wind_data (LoadWindData): Wind data loader instance
+            wind_data (WindDataProcessor): Wind data processor instance
             stride (int): Number of grid points to skip for arrow plotting
             arrow_scale (int): Scale factor for arrow length
             vessel_states (List[Dict]): List of vessel state dictionaries from simulation
@@ -38,8 +38,7 @@ class AnimationPlotter:
         self.ax = None
         self.anim = None
 
-        # Process data
-        self.wind_data._process_data()
+        # WindDataProcessor already has wind_speed calculated
         self.setup_plot()
 
     def setup_plot(self) -> None:
@@ -109,7 +108,7 @@ class AnimationPlotter:
 
     def update_frame(self, frame: int) -> None:
         """Update the animation frame."""
-        # Update wind visualization (existing code)
+        # Update wind visualization
         self.speed_plot.set_array(
             self.wind_data.wind_speed.isel(time=frame).values.ravel()
         )
@@ -193,6 +192,6 @@ class AnimationPlotter:
 if __name__ == "__main__":
     # Example usage
     file_path = "wind_data/2024-01-01_2024-01-31_50.0_40.0_-5.0_-15.0_ERA5_data.grib"
-    wind_data = LoadWindData(file_path)
+    wind_data = WindDataProcessor(file_path)
     plotter = AnimationPlotter(wind_data, stride=3, arrow_scale=200)
     plotter.animate(interval=200)
