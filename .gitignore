@@ -169,3 +169,20 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+_code_archive/ERA5_collector.py
+_code_archive/grid_file_reader.ipynb
+_code_archive/nc_file_reader.py
+_code_archive/wind_data_collector.py
+_code_archive/wind_data_processor.py
+_data_archive/2023-01-01_2023-01-10_data.grib
+_data_archive/2023-01-01_2023-01-10_data.grib.5b7b6.idx
+_data_archive/20230101_20230110_wind_data.grib
+_data_archive/20230101_20230110_wind_data.grib.5b7b6.idx
+_data_archive/2023-01-01_2023-02-10_data.grib.5b7b6.idx
+_data_archive/486f59e39c7be419fa15fe83166d90b4.zip
+_data_archive/data_stream-oper_stepType-instant.nc
+_data_archive/data_stream-wave_stepType-instant.nc
+_data_archive/north_sea_wind_data.grib
+_data_archive/north_sea_wind_data.grib.5b7b6.idx
+_data_archive/north_sea_wind_data.nc
+~/.cdsapirc
