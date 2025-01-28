@@ -9,7 +9,16 @@ from folium_plotter import plot_vessel_track
 
 
 class SailingEnv(gym.Env):
-    """Sailing environment that follows gym interface"""
+    """Sailing environment that follows gym interface
+
+    Args:
+        wind_data: WindDataProcessor instance containing wind field data
+        initial_lat: Initial latitude in degrees
+        initial_lon: Initial longitude in degrees
+        initial_heading: Initial vessel heading in degrees (0=North, 90=East)
+        render_mode: One of 'human', 'folium', 'matplotlib', or 'rgb_array'
+        time_step: Time step in hours
+    """
 
     metadata = {
         "render_modes": ["human", "folium", "matplotlib", "rgb_array"],
@@ -49,8 +58,8 @@ class SailingEnv(gym.Env):
         # Observation space: [lat, lon, heading, speed, wind_speed, wind_direction]
         # TODO: Change the observation space to match the actual data
         self.observation_space = spaces.Box(
-            low=np.array([30.0, -20.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float32),
-            high=np.array([60.0, 0.0, 360.0, 30.0, 50.0, 360.0], dtype=np.float32),
+            low=np.array([-90.0, -180.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float32),
+            high=np.array([90.0, 180.0, 360.0, 30.0, 50.0, 360.0], dtype=np.float32),
             dtype=np.float32,
         )
 
@@ -157,8 +166,8 @@ class SailingEnv(gym.Env):
         observation = self._get_obs()
         info = self._get_info()
 
-        # TODO: Create a reward function
-        reward = self.vessel.speed  # Simple reward based on speed
+        # TODO: Update reward function to be more complex
+        reward = self._calculate_reward()
 
         # Check if episode is done (example conditions)
         terminated = False
@@ -169,7 +178,7 @@ class SailingEnv(gym.Env):
     def render(self):
         """Render the environment."""
         if self.render_mode == "folium":
-            plot_vessel_track(self.states)
+            plot_vessel_track(self.states, wind_data=self.wind_data)
         elif self.render_mode in ["human", "matplotlib"]:
             # Create a copy of the wind data to avoid modifying the original
             wind_data_copy = WindDataProcessor(self.wind_data.file_path)
@@ -194,6 +203,13 @@ class SailingEnv(gym.Env):
         elif self.render_mode == "rgb_array":
             # Implement if needed for training visualization
             raise NotImplementedError()
+
+    def _calculate_reward(self):
+        """Calculate the reward
+
+        TODO: Update reward to maximise speed while minimising end distance from the start point.
+        """
+        return self.vessel.speed
 
     def close(self):
         """Clean up environment resources."""
