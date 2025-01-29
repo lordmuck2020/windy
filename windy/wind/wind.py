@@ -34,7 +34,15 @@ class ERA5DataCollector:
     def _generate_date_lists(
         self, start_date: str, end_date: str
     ) -> tuple[List[str], List[str], List[str]]:
-        """Generate lists of years, months, and days for the date range."""
+        """Generate lists of years, months, and days for the date range.
+
+        Parameters:
+            start_date: Start date in the format YYYY-MM-DD
+            end_date: End date in the format YYYY-MM-DD
+
+        Returns:
+            Tuple[List[str], List[str], List[str]]: Lists of years, months, and days
+        """
         start = datetime.strptime(start_date, "%Y-%m-%d")
         end = datetime.strptime(end_date, "%Y-%m-%d")
 
@@ -76,7 +84,21 @@ class ERA5DataCollector:
         ],
         output_dir: str = "wind_data",
     ) -> Tuple[bool, Union[xr.Dataset, None]]:
-        """Fetch marine wind data from ERA5 for a specified rectangular region."""
+        """Fetch marine wind data from ERA5 for a specified rectangular region.
+
+        Parameters:
+            north: Northern boundary latitude in degrees
+            south: Southern boundary latitude in degrees
+            east: Eastern boundary longitude in degrees
+            west: Western boundary longitude in degrees
+            start_date: Start date in the format YYYY-MM-DD
+            end_date: End date in the format YYYY-MM-DD
+            variables: List of variables to fetch
+            output_dir: Directory to save the fetched data
+
+        Returns:
+            Tuple[bool, Union[xr.Dataset, None]]: Success status and fetched dataset
+        """
         # Validate input
         try:
             self._validate_area(north, south, east, west)

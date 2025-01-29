@@ -65,12 +65,15 @@ class VesselSimulator:
         # Calculate movement components
         heading_rad = np.radians(self.state.heading)
         dlat = distance * np.cos(heading_rad)
-        # Adjust longitude movement based on latitude
-        dlon = distance * np.sin(heading_rad) / np.cos(np.radians(self.state.latitude))
 
-        # Update position
-        new_lat = self.state.latitude + dlat
-        new_lon = self.state.longitude + dlon
+        # Prevent division by zero near poles by clamping latitude
+        lat_rad = np.radians(np.clip(self.state.latitude, -89.0, 89.0))
+        # Adjust longitude movement based on latitude
+        dlon = distance * np.sin(heading_rad) / np.cos(lat_rad)
+
+        # Clamp new position to valid ranges
+        new_lat = np.clip(self.state.latitude + dlat, -90.0, 90.0)
+        new_lon = ((self.state.longitude + dlon + 180.0) % 360.0) - 180.0
 
         return new_lat, new_lon
 
@@ -87,17 +90,26 @@ class VesselSimulator:
             wind_direction: Wind direction in degrees (0 = North, 90 = East)
             time_step: Time step in hours
         """
+        # Ensure valid wind inputs
+        wind_speed = max(0.0, float(wind_speed))
+        wind_direction = float(wind_direction) % 360.0
+
         # Simple model: vessel can sail at 45° to the wind
         # Speed is proportional to wind speed with maximum at beam reach (90° to wind)
         relative_angle = abs((wind_direction - self.state.heading + 180) % 360 - 180)
 
         if relative_angle < 45:  # Into the wind - no movement
-            self.state.speed = 0
+            self.state.speed = 0.0
         else:
             # Maximum speed at beam reach (90 degrees to wind)
             # Simplified speed calculation - can be made more sophisticated
             efficiency = np.sin(np.radians(relative_angle))
             self.state.speed = wind_speed * self.hull_efficiency * efficiency
+
+        # Ensure valid speed
+        self.state.speed = max(
+            0.0, min(30.0, self.state.speed)
+        )  # Cap speed at 30 knots
 
         if self.state.speed > 0:
             new_lat, new_lon = self.calculate_new_position(time_step)

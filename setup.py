@@ -22,6 +22,7 @@ setup(
         "gymnasium>=0.29.0",
         "torch>=2.1.0",
         "tensorboard>=2.15.0",
+        "stable-baselines3[extra]>=2.2.1",
     ],
     python_requires=">=3.9",
 )
